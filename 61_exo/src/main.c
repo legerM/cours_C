@@ -11,7 +11,7 @@ _Bool is_vowel(char text_letter)
 {
 
 
-	char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','é','à','è','ù','â','ê','î','ô','û'};
+	char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','ï¿½','ï¿½','ï¿½','ï¿½','ï¿½','ï¿½','ï¿½','ï¿½','ï¿½','\0'};
 
 	for(int j=0;vowel[j]!='\0';j++){
 		if(text_letter==vowel[j]){
@@ -21,10 +21,10 @@ _Bool is_vowel(char text_letter)
 	return 0;
 }
 _Bool is_cons(char text_letter){
-	char Consonant[] = {'b','c','ç','d','f','g','h','j','k','l','m',
+	char Consonant[] = {'b','c','ï¿½','d','f','g','h','j','k','l','m',
 			'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'z',
 			'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
-			'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Z'};
+			'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Z','\0'};
 
 	for (int k=0;Consonant[k]!='\0';k++)
 	{
@@ -43,14 +43,12 @@ int main(int argc, char *argv[]){
 	int nb_vowel=0;
 	int nb_cons=0;
 	char text[128];
-	int i=0;
 	FILE* fichier;
 	fichier=fopen("/home/mickaell/Atollic/TrueSTUDIO/STM32_workspace_9.3/61_exo/Debug/src/51_long_text.txt","r");
 
 
 	while(fgets(text,128,fichier)!= NULL){
-		i=0;
-		while(text[i]!='\0'){
+		for (int i=0 ; text[i]!='\0' ; i++){
 			if (is_vowel(text[i])){
 				nb_vowel+=1;
 			}
@@ -58,7 +56,6 @@ int main(int argc, char *argv[]){
 			else if(is_cons(text[i])){
 				nb_cons+=1;
 			}
-		i++;
 		}
 
 	}

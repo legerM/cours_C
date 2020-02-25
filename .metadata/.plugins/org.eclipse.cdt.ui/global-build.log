@@ -1,4 +1,7 @@
-14:07:46 **** Build of configuration Debug for project test ****
+16:03:41 **** Incremental Build of configuration Debug for project 71_distance_point.c ****
 make -j4 all 
 gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
-gcc  -o "test"  ./src/main.o   
+gcc  -o "71_distance_point.c"  ./src/main.o   -lm
+16:03:42 **** Incremental Build of configuration Debug for project 71_distance_point.c ****
+make -j4 all 
+make: Nothing to be done for 'all'.

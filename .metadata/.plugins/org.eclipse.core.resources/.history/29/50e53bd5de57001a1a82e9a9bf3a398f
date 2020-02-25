@@ -1,0 +1,33 @@
+#include<stdio.h>
+#include<math.h>
+
+int main(void){
+	int x1;
+	int x2;
+	int y1;
+	int y2;
+	int distance_x;
+	int distance_y;
+	int distance;
+
+
+	printf("veuillez entrer deux coordonnées\n");
+	scanf("%d %d",&x1,&y1);
+	printf("veuillez entrer encore deux autres coordonnnées\n");
+	scanf("%d %d",&x2,&y2);
+
+
+
+
+	distance_x = x2 - x1;
+	distance_y = y2 - y1;
+	distance = sqrt (distance_x*distance_x)+(distance_y * distance_y);
+	printf("la distance est de %d",distance);
+
+
+
+
+
+
+	return 0;
+}

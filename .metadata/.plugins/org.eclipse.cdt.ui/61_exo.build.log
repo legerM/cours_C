@@ -1,0 +1,53 @@
+15:02:19 **** Incremental Build of configuration Debug for project 61_exo ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function ‘is_vowel’:
+../src/main.c:14:64: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                ^~~~~
+../src/main.c:14:64: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:70: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                      ^~~~~
+../src/main.c:14:70: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:76: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                            ^~~~~
+../src/main.c:14:76: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:82: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                  ^~~~~
+../src/main.c:14:82: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:88: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                        ^~~~~
+../src/main.c:14:88: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:94: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                              ^~~~~
+../src/main.c:14:94: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:100: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                                    ^~~~~
+../src/main.c:14:100: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:106: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                                          ^~~~~
+../src/main.c:14:106: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c:14:112: warning: multi-character character constant [-Wmultichar]
+  char vowel[]={'a','e','i','o','u','y','A','E','I','O','U','Y','�','�','�','�','�','�','�','�','�','\0'};
+                                                                                                                ^~~~~
+../src/main.c:14:112: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c: In function ‘is_cons’:
+../src/main.c:24:30: warning: multi-character character constant [-Wmultichar]
+  char Consonant[] = {'b','c','�','d','f','g','h','j','k','l','m',
+                              ^~~~~
+../src/main.c:24:30: warning: overflow in implicit constant conversion [-Woverflow]
+../src/main.c: In function ‘main’:
+../src/main.c:46:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i=0;
+      ^
+gcc  -o "61_exo"  ./src/main.o   
+
+15:02:19 Build Finished (took 624ms)
+
