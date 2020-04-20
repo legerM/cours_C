@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include <stdint.h>
+#include <pthread.h>
+#include<time.h>
+
+void *thread_func_1(void *arg) {
+	while(1){
+	printf("Hello World");
+	sleep(2);
+	return NULL;
+	}
+}
+
+void *thread_func_2(void *arg) {
+	while(1){
+
+	printf("The World is Mine");
+	sleep(1);
+	return NULL;
+	}
+}
+
+int main(int argc, char *argv[]) {
+
+	pthread_t t1, t2;
+	int i = 1;
+	int j = 2;
+
+	pthread_create(&t1, NULL, &thread_func_1, &i);
+	pthread_create(&t2, NULL, &thread_func_2, &j);
+
+	pthread_join(t1, NULL);
+	pthread_join(t2, NULL);
+
+	return 0;
+}

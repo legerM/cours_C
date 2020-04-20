@@ -1,0 +1,7 @@
+09:47:38 **** Clean-only build of configuration Debug for project lumiere ****
+make -j4 clean 
+rm -rf  ./src/exo_lumiere.o ./src/main.o ./src/parping.o  ./src/exo_lumiere.d ./src/main.d ./src/parping.d  lumiere
+ 
+
+09:47:39 Build Finished (took 461ms)
+

@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include <stdlib.h>
+#include<string.h>
+#include "FIFO.h"
+#include <pthread.h>
+#include<unistd.h>
+
+int main(void){
+//	init_list(&liste);
+//
+//	struct List* liste = 0;
+//	for(int i=0; i<3; i++) {
+//		push_element(&liste, i);
+//	}
+//
+//	printf("gnu %d \n", pop_element(&liste));
+//	printf("gnou %d \n", pop_element(&liste));
+//	printf("gnui %d \n", pop_element(&liste));
+
+
+	liste.head = 0;
+	liste.tail = 0;
+	pthread_t t1, t2;
+	(*liste).mutex= PTHREAD_MUTEX_INITIALIZER;
+
+	pthread_create(&t1, NULL, &thread_send, NULL);
+	pthread_create(&t2, NULL, &thread_pop, NULL);
+
+
+	pthread_join(t1, NULL);
+	pthread_join(t2, NULL);
+
+
+
+	return 0;
+}

@@ -1,0 +1,7 @@
+16:18:16 **** Incremental Build of configuration Debug for project megazorg ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/thread.d" -MT"src/thread.o" -o "src/thread.o" "../src/thread.c"
+gcc  -o "megazorg"  ./src/FIFO.o ./src/decompte.o ./src/game_p4.o ./src/leds_control.o ./src/main.o ./src/thread.o   -lpthread
+
+16:18:17 Build Finished (took 869ms)
+

@@ -1,0 +1,46 @@
+/*
+ * game_p4.c
+ *
+ *  Created on: Mar 30, 2020
+ *      Author: mickaell
+ */
+
+
+#include "debug.h"
+#include "game_p4.h"
+#include <stdint.h>
+
+int8_t matrix [TABLE_HEIGHT][TABLE_WIDTH];
+
+void clear_matrix() {
+	//matrice vide
+	for (int row = 0; row < TABLE_HEIGHT; row++) {
+		for (int col = 0; col < TABLE_WIDTH; col++) {
+			matrix[row][col] = 0;
+		}
+	}
+}
+
+/* vide la matrice
+ * fixer le active_player
+ * initialise les couleurs associées à chaque joueur
+ * */
+void gp4_init(void){
+	//matrice vide
+	clear_matrix();
+}
+
+
+void gp4_display(void){
+	for (int row = 0; row < TABLE_HEIGHT; row++) {
+		for (int col = 0; col < TABLE_WIDTH; col++) {
+			printf(matrix[row][col]);
+		}
+	}
+}
+
+
+
+
+
+

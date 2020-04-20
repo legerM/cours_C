@@ -1,0 +1,14 @@
+14:52:54 **** Incremental Build of configuration Debug for project Color_led2.c ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function ‘main’:
+../src/main.c:83:2: warning: implicit declaration of function ‘sleep’ [-Wimplicit-function-declaration]
+  sleep(0.1);
+  ^~~~~
+../src/main.c:62:8: warning: variable ‘tabline’ set but not used [-Wunused-but-set-variable]
+  Color tabline[7];
+        ^~~~~~~
+gcc  -o "Color_led2.c"  ./src/leds_control.o ./src/main.o   
+
+14:52:55 Build Finished (took 627ms)
+

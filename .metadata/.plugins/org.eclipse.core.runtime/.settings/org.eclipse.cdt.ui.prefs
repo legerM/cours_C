@@ -4,6 +4,7 @@ content_assist_parameters_foreground=246,243,232
 content_assist_proposals_background=36,36,36
 content_assist_proposals_foreground=246,243,232
 eclipse.preferences.version=1
+formattingConfirmScopeForEmptySelection=false
 inactiveCodeColor=97,97,97
 sourceHoverBackgroundColor=161,152,121
 sourceHoverBackgroundColor.SystemDefault=false

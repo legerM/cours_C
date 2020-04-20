@@ -1,0 +1,23 @@
+16:30:11 **** Incremental Build of configuration Debug for project test2 ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c: In function ‘main’:
+../src/main.c:11:17: error: invalid operands to binary & (have ‘int’ and ‘char *’)
+ hexa1=(char)hexa&"0xff00";
+       ~~~~~~~~~~^
+../src/main.c:12:17: error: invalid operands to binary & (have ‘int’ and ‘char *’)
+ hexa2=(char)hexa&"5565";
+       ~~~~~~~~~~^
+../src/main.c:17:20: warning: format ‘%s’ expects argument of type ‘char *’, but argument 2 has type ‘int’ [-Wformat=]
+ printf("hexa1 est %s et hexa2 est %s \n",hexa1,hexa2);
+                   ~^
+                   %d
+../src/main.c:17:36: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
+ printf("hexa1 est %s et hexa2 est %s \n",hexa1,hexa2);
+                                   ~^
+                                   %d
+make: *** [src/main.o] Error 1
+src/subdir.mk:18: recipe for target 'src/main.o' failed
+
+16:30:11 Build Finished (took 524ms)
+

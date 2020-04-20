@@ -1,0 +1,7 @@
+12:59:11 **** Incremental Build of configuration Debug for project 74_translate_point.c ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+gcc  -o "74_translate_point.c"  ./src/main.o   -lm
+
+12:59:11 Build Finished (took 616ms)
+

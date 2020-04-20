@@ -1,0 +1,16 @@
+
+
+#include<stdio.h>
+
+int main(void){
+
+int hexa=0xff005565;
+int hexa1=hexa&0xff00;
+int hexa2=(hexa>>6)&5565;
+char hexa3=(char)hexa1;
+char hexa4=(char)hexa2;
+
+printf("hexa1 est %s et hexa2 est %s \n",hexa3,hexa4);
+
+	return 0;
+}

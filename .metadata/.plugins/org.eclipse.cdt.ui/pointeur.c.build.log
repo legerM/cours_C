@@ -1,0 +1,13 @@
+14:31:11 **** Incremental Build of configuration Debug for project pointeur.c ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pile.d" -MT"src/pile.o" -o "src/pile.o" "../src/pile.c"
+../src/main.c:5:10: fatal error: Pile.h: No such file or directory
+ #include "Pile.h"
+          ^~~~~~~~
+compilation terminated.
+src/subdir.mk:21: recipe for target 'src/main.o' failed
+make: *** [src/main.o] Error 1
+
+14:31:12 Build Finished (took 571ms)
+

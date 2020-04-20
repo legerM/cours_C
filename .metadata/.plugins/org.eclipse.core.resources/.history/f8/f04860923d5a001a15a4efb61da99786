@@ -1,0 +1,14 @@
+
+
+#include<stdio.h>
+
+int main(void){
+
+int hexa=0xff005565;
+char hexa1=(char)hexa&0xff00;
+char hexa2=(char)hexa&5565;
+
+printf("hexa1 est %s et hexa2 est %s \n",hexa1,hexa2);
+
+	return 0;
+}

@@ -1,0 +1,119 @@
+int main(int argc, char *argv[]) {
+	int socket_desc;
+	char *message;
+	while (1) {
+		socket_desc = establish_client_connection();
+		message = "Sweet !\n";
+		int message_sending_tries = 3;
+		while (socket_desc != -1) {
+			int message_sending_status = send_client_message(socket_desc,
+					message);
+			if (message_sending_status == -1) {
+				message_sending_tries -= 1;
+				sleep(2);
+				if (message_sending_tries <= 0){
+					close(socket_desc);
+					printf("Reset socket.\n");
+					socket_desc = -1;
+				}
+				continue;
+			}
+			sleep(2);
+		}
+	}
+	return 0;
+}
+[8 h 47]
+main.c
+
+
+
+
+
+
+[8 h 48]
+#include<stdio.h>
+#include<string.h>	//strlen
+#include<sys/socket.h>
+#include<arpa/inet.h>	//inet_addr
+#include<unistd.h>
+#include"debug.h"
+#include<errno.h>
+#include"client.h"
+int create_client_socket(void) {
+	int socket_desc;
+	int myerror;
+	socket_desc = socket(AF_INET, SOCK_STREAM, 0);
+	if (socket_desc == -1) {
+		myerror = errno;
+		error_printf("Could not create socket. Error = %d (%s)\n", myerror,
+				strerror(myerror));
+		return -1;
+	}
+	debug_printf(-1, "Socket created.\n");
+	return socket_desc;
+}
+int establish_client_connection(void) {
+	while (1) {
+		int socket_desc = create_client_socket();
+		if (socket_desc == -1) {
+			sleep(2);
+			continue;
+		}
+		while (socket_desc >= 0) {
+			struct sockaddr_in server;
+			server.sin_addr.s_addr = inet_addr(SRV_IP);
+			server.sin_family = AF_INET;
+			server.sin_port = htons(SRV_PORT);
+			int connection_status = connect(socket_desc,
+					(struct sockaddr *) &server, sizeof(server));
+			int myerror;
+			int client_connection_tries = 3;
+			if (connection_status != 0) {
+				myerror = errno;
+				error_printf("Connection failed. Error = %d (%s)\n", myerror,
+						strerror(myerror));
+				client_connection_tries -= 1;
+				sleep(2);
+				if (client_connection_tries <= 0) {
+					close(socket_desc);
+					printf("Reset socket.\n");
+					socket_desc = -1;
+				}
+				continue;
+			}
+			debug_printf(-1, "Connection established.\n");
+			return socket_desc;
+		}
+	}
+}
+int send_client_message(int socket_desc, char* message) {
+	int message_status = send(socket_desc, message, strlen(message), 0);
+	int myerror;
+	if (message_status < 0) {
+		myerror = errno;
+		error_printf("Message sending failed. Error = %d (%s)\n", myerror,
+				strerror(myerror));
+		return -1;
+	}
+	debug_printf(-1, "Data sent.\n");
+	return 0;
+}
+[8 h 48]
+client.c
+
+
+
+
+
+[8 h 48]
+#ifndef CLIENT_H_
+#define CLIENT_H_
+#define SRV_IP "127.0.0.1"
+#define SRV_PORT 5001
+int create_client_socket(void);
+int establish_client_connection(void);
+int send_client_message(int socket_desc, char* message);
+#endif /* CLIENT_H_ */
+[8 h 48]
+client.h

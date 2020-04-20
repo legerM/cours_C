@@ -1,0 +1,19 @@
+
+
+#include<stdio.h>
+
+struct compte{
+
+	int nombre;
+	struct Pile *prec;
+
+};
+
+int main(void){
+
+
+
+struct compte*a = (struct compte*) malloc(sizeof(struct compte));
+
+	return 0;
+}

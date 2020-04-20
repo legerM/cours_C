@@ -1,0 +1,163 @@
+/*
+ * thread.c
+ *
+ *  Created on: Apr 9, 2020
+ *      Author: mickaell
+ */
+
+
+#include<stdio.h>
+#include <stdint.h>
+#include <pthread.h>
+#include<unistd.h>
+#include"leds_control.h"
+#include "FIFO.h"
+#include <semaphore.h>
+#include "thread.h"
+int compteur=0;
+char recep_tab[5];
+extern struct List liste_app;
+extern struct List liste_send;
+static pthread_mutex_t mutex= PTHREAD_MUTEX_INITIALIZER;
+int pthread_mutex_unlock (pthread_mutex_t * mutex);
+int pthread_mutex_lock (pthread_mutex_t * mutex);
+
+typedef struct{
+	int RValue;
+	int GValue;
+	int BValue;
+}Color;
+
+
+//le rgb des couleurs
+
+const Color red ={255,0,0};
+const Color green={0,255,0};
+const Color blue={0,0,255};
+const Color white={255,255,255};
+const Color purple={255,0,255};
+const Color yellow={255,255,0};
+const Color black={0,0,0};
+
+
+void *thread_send(void *arg) {
+	pop_element(&liste_send,compteur);
+	set_number(compteur);
+	return NULL;
+}
+
+void *thread_read(void *arg) {
+
+	while(1){
+		pthread_mutex_lock (&mutex);
+		if(readbutton(recep_tab,5)==LCRC_OK){
+			printf("%d %d %d %d \n",recep_tab[0],recep_tab[1],recep_tab[2],recep_tab[3]);
+			if(recep_tab[0]==112){
+				if(recep_tab[1]==49 || recep_tab[1]==50){
+					if(recep_tab[2]==100 && recep_tab[3] == 100){
+						push_element(&liste_app,DEC_VALUE);
+					}
+					if (recep_tab[2] == 117 && recep_tab [3]== 100){
+						push_element(&liste_app,INC_VALUE);
+					}
+				}
+			}
+		}
+		pthread_mutex_unlock (&mutex);
+		sleep(1);
+	}
+
+	return NULL;
+
+}
+void *thread_app(void *arg){
+	int gnu;
+	while(1){
+		if (pop_element(&liste_app,&gnu)){
+			if(gnu == INC_VALUE){
+				compteur ++;
+
+			}
+			else if (gnu == DEC_VALUE){
+				compteur --;
+			}
+		}
+		push_element(&liste_send,compteur);
+	}
+}
+
+
+void set_all_black(void){
+	for(int row=0; row< 7;row++){
+		for(int col=0;col< 7;col++){
+			setLedColor((row + 1),(col + 1),0,0,0);
+		}
+	}
+}
+void set_number(int compteur){
+	if (compteur == 0){
+		setLedColor(1,3,255,0,0);
+		setLedColor(1,4,255,0,0);
+		setLedColor(1,5,255,0,0);
+		setLedColor(2,2,255,0,0);
+		setLedColor(2,6,255,0,0);
+		setLedColor(3,2,255,0,0);
+		setLedColor(3,6,255,0,0);
+		setLedColor(4,2,255,0,0);
+		setLedColor(4,6,255,0,0);
+		setLedColor(5,2,255,0,0);
+		setLedColor(5,6,255,0,0);
+		setLedColor(6,2,255,0,0);
+		setLedColor(6,6,255,0,0);
+		setLedColor(7,3,255,0,0);
+		setLedColor(7,4,255,0,0);
+		setLedColor(7,5,255,0,0);
+	}
+	else if (compteur == 1){
+		setLedColor(1,5,255,0,0);
+		setLedColor(2,4,255,0,0);
+		setLedColor(2,5,255,0,0);
+		setLedColor(3,5,255,0,0);
+		setLedColor(3,3,255,0,0);
+		setLedColor(4,5,255,0,0);
+		setLedColor(4,2,255,0,0);
+		setLedColor(5,5,255,0,0);
+		setLedColor(6,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+
+	}
+	else if (compteur == 2){
+		setLedColor(1,3,255,0,0);
+		setLedColor(1,4,255,0,0);
+		setLedColor(1,5,255,0,0);
+		setLedColor(2,2,255,0,0);
+		setLedColor(2,6,255,0,0);
+		setLedColor(3,6,255,0,0);
+		setLedColor(4,5,255,0,0);
+		setLedColor(5,4,255,0,0);
+		setLedColor(6,3,255,0,0);
+		setLedColor(7,2,255,0,0);
+		setLedColor(7,3,255,0,0);
+		setLedColor(7,4,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,6,255,0,0);
+	}
+	else if (compteur == 3){
+		setLedColor(1,5,255,0,0);
+		setLedColor(1,5,255,0,0);
+		setLedColor(1,5,255,0,0);
+		setLedColor(2,5,255,0,0);
+		setLedColor(2,5,255,0,0);
+		setLedColor(3,5,255,0,0);
+		setLedColor(4,5,255,0,0);
+		setLedColor(4,5,255,0,0);
+		setLedColor(4,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+		setLedColor(7,5,255,0,0);
+	}
+}
+

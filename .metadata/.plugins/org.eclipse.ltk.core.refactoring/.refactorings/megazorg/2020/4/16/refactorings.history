@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Create method decompte" description="Extract Method Refactoring" fileName="file:/home/mickaell/Atollic/cours_C/megazorg/src/thread.c" flags="4" id="org.eclipse.cdt.internal.ui.refactoring.extractfunction.ExtractFunctionRefactoring" name="decompte" replaceDuplicates="false" selection="2957,392" stamp="1586871655896" visibility="private"/>
+</session>

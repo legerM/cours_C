@@ -1,0 +1,294 @@
+/*
+ * thread.c
+ *
+ *  Created on: Apr 9, 2020
+ *      Author: mickaell
+ */
+
+
+#include<stdio.h>
+#include <stdint.h>
+#include <pthread.h>
+#include<unistd.h>
+#include"leds_control.h"
+#include "FIFO.h"
+#include <semaphore.h>
+#include "thread.h"
+char recep_tab[5];
+extern struct List liste_app;
+extern struct List liste_send;
+extern sem_t sem_app;
+extern sem_t sem_read;
+extern Color matrix[7][7];
+extern Color actual_display[7][7];
+
+
+
+//le rgb des couleurs
+
+const Color red ={255,0,0};
+const Color green={0,255,0};
+const Color blue={0,0,255};
+const Color white={255,255,255};
+const Color purple={255,0,255};
+const Color yellow={255,255,0};
+const Color black={0,0,0};
+
+
+void send_message(QUEUE_ID liste, char* message ,int message_lenght){
+	if(liste == QUEUE_READ){
+		push_element(&liste_app, &message);
+		sem_post(&sem_read);
+	}
+	else if (liste== QUEUE_SEND){
+		push_element(&liste_send,&message);
+		sem_post(&sem_app);
+	}
+
+}
+
+int receive_message(QUEUE_ID liste,char* message , int message_lenght){
+	int pop_status=0;
+	if(liste == QUEUE_READ){
+		sem_wait(&sem_read);
+		pop_status = pop_element(&liste_app, &message);
+	}
+	else if (liste == QUEUE_SEND){
+		sem_wait(&sem_app);
+		pop_element(&liste_send,&message);
+
+	}
+	return pop_status;
+}
+
+
+void *thread_send(void *arg) {
+	int value_compt;
+	while(1){
+		sem_wait(&sem_app);
+		if(pop_element(&liste_send,&value_compt)){
+			set_number(value_compt);
+			for(int row=0; row< TAB_SIZE;row++){
+				for(int col=0;col< TAB_SIZE;col++){
+					if(matrix[row][col].RValue == actual_display[row][col].RValue
+							&& matrix[row][col].GValue == actual_display[row][col].GValue
+							&& matrix[row][col].BValue == actual_display[row][col].BValue ){
+
+					}else{
+						setLedColor((row + 1),(col + 1),matrix[row][col].RValue,matrix[row][col].GValue,matrix[row][col].BValue);
+						actual_display[row][col] = matrix[row][col];
+					}
+				}
+			}
+
+		}
+	}
+}
+
+
+
+void *thread_read(void *arg) {
+
+	while(1){
+
+		if(readbutton(recep_tab,5)==LCRC_OK){
+			printf("%d %d %d %d \n",recep_tab[0],recep_tab[1],recep_tab[2],recep_tab[3]);
+			if(recep_tab[0]==112){
+				if(recep_tab[1]==49 || recep_tab[1]==50){
+					if(recep_tab[2]==100 && recep_tab[3] == 100){
+						push_element(&liste_app,*DEC_VALUE);
+					}
+					if (recep_tab[2] == 117 && recep_tab [3]== 100){
+						push_element(&liste_app,*INC_VALUE);
+					}
+				}
+			}
+		}
+		sem_post(&sem_read);
+		sleep(1);
+	}
+
+	return NULL;
+
+}
+void *thread_app(void *arg){
+	int compteur=0;
+	int gnu;
+	while(1){
+		sem_wait(&sem_read);
+		if (pop_element(&liste_app,&gnu)){
+			if(gnu == INC_VALUE){
+				compteur ++;
+				if(compteur >9 ){
+					compteur = 0;
+				}
+
+			}
+			else if (gnu == DEC_VALUE){
+				compteur --;
+				if (compteur<0){
+					compteur = 9;
+				}
+			}
+			push_element(&liste_send,&compteur);
+			sem_post(&sem_app);
+
+		}
+	}
+}
+void init_matrix(void) {
+	for (int row = 0; row < TAB_SIZE; row++) {
+		for (int col = 0; col < TAB_SIZE; col++) {
+			matrix[row][col].RValue = black.RValue;
+			matrix[row][col].GValue = black.GValue;
+			matrix[row][col].BValue = black.BValue;
+			actual_display[row][col].RValue = black.RValue;
+			actual_display[row][col].GValue = black.GValue;
+			actual_display[row][col].BValue = black.BValue;
+		}
+	}
+}
+void set_all_black(void){
+	for(int row=0; row< 7;row++){
+		for(int col=0;col< 7;col++){
+			setLedColor((row + 1),(col + 1),0,0,0);
+		}
+	}
+}
+
+void set_number(int compteur){
+
+	Color nbr_color = PLAYER_COLOR;
+	Color bckgrnd_color = BACKGROUND;
+	for (int row = 0; row < TAB_SIZE; row++) {
+		for (int col = 0; col < TAB_SIZE; col++) {
+			if (compteur == 1) { /*Ensemble de conditions pour afficher le chiffre 1*/
+				if ((col == 4) || (row == 3 && col == 1)
+						|| (row == 2 && col == 2) || (row == 1 && col == 3)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 2) { /*Ensemble de conditions pour afficher le chiffre 2*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 1 && col == 5) || (row == 2 && col == 5)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 4 && col == 1)
+						|| (row == 5 && col == 1) || (row == 6 && col == 2)
+						|| (row == 5 && col == 5) || (row == 6 && col == 3)
+						|| (row == 6 && col == 4)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 3) { /*Ensemble de conditions pour afficher le chiffre 3*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 1 && col == 5) || (row == 2 && col == 5)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 4 && col == 5)
+						|| (row == 5 && col == 5) || (row == 6 && col == 2)
+						|| (row == 6 && col == 3) || (row == 6 && col == 4)
+						|| (row == 5 && col == 1)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 4) { /*Ensemble de conditions pour afficher le chiffre 4*/
+				if ((row == 0 && col == 4) || (row == 1 && col == 3)
+						|| (row == 1 && col == 4) || (row == 2 && col == 2)
+						|| (row == 2 && col == 4) || (row == 3 && col == 1)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 3 && col == 5)
+						|| (row == 4 && col == 4) || (row == 5 && col == 4)
+						|| (row == 6 && col == 4)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 5) { /*Ensemble de conditions pour afficher le chiffre 5*/
+				if ((row == 0 && col == 1) || (row == 0 && col == 2)
+						|| (row == 0 && col == 3) || (row == 0 && col == 4)
+						|| (row == 0 && col == 5) || (row == 1 && col == 1)
+						|| (row == 2 && col == 1) || (row == 3 && col == 1)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 4 && col == 5)
+						|| (row == 5 && col == 5) || (row == 6 && col == 1)
+						|| (row == 6 && col == 2) || (row == 6 && col == 3)
+						|| (row == 6 && col == 4)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 6) { /*Ensemble de conditions pour afficher le chiffre 6*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 2 && col == 1) || (row == 3 && col == 1)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 4 && col == 1)
+						|| (row == 4 && col == 5) || (row == 5 && col == 1)
+						|| (row == 5 && col == 5) || (row == 6 && col == 2)
+						|| (row == 6 && col == 3) || (row == 6 && col == 4)
+						|| (row == 1 && col == 5)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 7) { /*Ensemble de conditions pour afficher le chiffre 7*/
+				if ((row == 0 && col == 1) || (row == 0 && col == 2)
+						|| (row == 0 && col == 3) || (row == 0 && col == 4)
+						|| (row == 0 && col == 5) || (row == 1 && col == 5)
+						|| (row == 2 && col == 5) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 3 && col == 5)
+						|| (row == 4 && col == 5) || (row == 5 && col == 5)
+						|| (row == 6 && col == 5)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 8) { /*Ensemble de conditions pour afficher le chiffre 8*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 2 && col == 1) || (row == 2 && col == 5)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 4 && col == 1)
+						|| (row == 4 && col == 5) || (row == 5 && col == 1)
+						|| (row == 5 && col == 5) || (row == 6 && col == 2)
+						|| (row == 6 && col == 3) || (row == 6 && col == 4)
+						|| (row == 1 && col == 5)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 9) { /*Ensemble de conditions pour afficher le chiffre 9*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 2 && col == 1) || (row == 2 && col == 5)
+						|| (row == 3 && col == 2) || (row == 3 && col == 3)
+						|| (row == 3 && col == 4) || (row == 3 && col == 5)
+						|| (row == 4 && col == 5) || (row == 5 && col == 1)
+						|| (row == 5 && col == 5) || (row == 6 && col == 2)
+						|| (row == 6 && col == 3) || (row == 6 && col == 4)
+						|| (row == 1 && col == 5)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+			if (compteur == 0) { /*Ensemble de conditions pour afficher le chiffre 0*/
+				if ((row == 0 && col == 2) || (row == 0 && col == 3)
+						|| (row == 0 && col == 4) || (row == 1 && col == 1)
+						|| (row == 2 && col == 1) || (row == 2 && col == 5)
+						|| (row == 3 && col == 5) || (row == 4 && col == 1)
+						|| (row == 4 && col == 5) || (row == 5 && col == 1)
+						|| (row == 5 && col == 5) || (row == 6 && col == 2)
+						|| (row == 6 && col == 3) || (row == 6 && col == 4)
+						|| (row == 1 && col == 5) || (row == 3 && col == 1)) {
+					matrix[row][col] = nbr_color;
+				} else
+					matrix[row][col] = bckgrnd_color;
+			}
+		}
+	}
+}
+

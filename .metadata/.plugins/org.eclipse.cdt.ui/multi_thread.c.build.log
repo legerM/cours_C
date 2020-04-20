@@ -1,0 +1,7 @@
+09:51:10 **** Build of configuration Debug for project multi_thread.c ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+gcc  -o "multi_thread.c"  ./src/main.o   
+
+09:51:11 Build Finished (took 543ms)
+

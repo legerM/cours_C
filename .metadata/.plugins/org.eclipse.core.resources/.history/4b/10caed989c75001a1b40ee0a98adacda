@@ -1,0 +1,38 @@
+#include<stdio.h>
+#include <stdint.h>
+#include <pthread.h>
+#include<unistd.h>
+char recep_tab[];
+static pthread_mutex_t mutex= PTHREAD_MUTEX_INITIALIZER;
+int pthread_mutex_unlock (pthread_mutex_t * mutex);
+int pthread_mutex_lock (pthread_mutex_t * mutex);
+void *thread_send(void *arg) {
+	pthread_mutex_lock (&mutex);
+	readbutton(recep_tab,4);
+	pthread_mutex_unlock (&mutex);
+	return NULL;
+}
+
+void *thread_read(void *arg) {
+	sleep(0.2);
+	pthread_mutex_lock (&mutex);
+
+	pthread_mutex_unlock (&mutex);
+	return NULL;
+
+}
+
+int main(int argc, char *argv[]) {
+
+	pthread_t t1, t2;
+
+
+	pthread_create(&t1, NULL, &thread_func_1, NULL);
+	pthread_create(&t2, NULL, &thread_func_2, NULL);
+
+
+	pthread_join(t1, NULL);
+	pthread_join(t2, NULL);
+
+	return 0;
+}

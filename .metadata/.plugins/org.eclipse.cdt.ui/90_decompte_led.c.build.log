@@ -1,0 +1,64 @@
+15:46:35 **** Incremental Build of configuration Debug for project 90_decompte_led.c ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/main.c:23:1: error: stray ‘\342’ in program
+ ​
+ ^
+../src/main.c:23:2: error: stray ‘\200’ in program
+ ​
+  ^
+../src/main.c:23:3: error: stray ‘\213’ in program
+ ​
+   ^
+../src/main.c:24:6: error: conflicting types for ‘setLedColor’
+ void setLedColor(const unsigned int row, const unsigned int col, const unsigned int red, const unsigned int green,
+      ^~~~~~~~~~~
+In file included from ../src/main.c:1:0:
+../src/leds_control.h:28:22: note: previous declaration of ‘setLedColor’ was here
+ LedControlReturnCode setLedColor(const unsigned int row,
+                      ^~~~~~~~~~~
+../src/main.c: In function ‘setLedColor’:
+../src/main.c:26:2: error: stray ‘\342’ in program
+  ​
+  ^
+../src/main.c:26:3: error: stray ‘\200’ in program
+  ​
+   ^
+../src/main.c:26:4: error: stray ‘\213’ in program
+  ​
+    ^
+../src/main.c:29:2: warning: implicit declaration of function ‘HAL_UART_Transmit’ [-Wimplicit-function-declaration]
+  HAL_UART_Transmit(&huart3, (uint8_t*)message, strlen(message), 10);
+  ^~~~~~~~~~~~~~~~~
+../src/main.c:29:21: error: ‘huart3’ undeclared (first use in this function)
+  HAL_UART_Transmit(&huart3, (uint8_t*)message, strlen(message), 10);
+                     ^~~~~~
+../src/main.c:29:21: note: each undeclared identifier is reported only once for each function it appears in
+../src/main.c:29:30: error: ‘uint8_t’ undeclared (first use in this function); did you mean ‘__uint8_t’?
+  HAL_UART_Transmit(&huart3, (uint8_t*)message, strlen(message), 10);
+                              ^~~~~~~
+                              __uint8_t
+../src/main.c:29:38: error: expected expression before ‘)’ token
+  HAL_UART_Transmit(&huart3, (uint8_t*)message, strlen(message), 10);
+                                      ^
+../src/main.c:30:2: warning: implicit declaration of function ‘HAL_Delay’ [-Wimplicit-function-declaration]
+  HAL_Delay(200);
+  ^~~~~~~~~
+../src/main.c:31:2: error: stray ‘\342’ in program
+  ​
+  ^
+../src/main.c:31:3: error: stray ‘\200’ in program
+  ​
+   ^
+../src/main.c:31:4: error: stray ‘\213’ in program
+  ​
+    ^
+../src/main.c: In function ‘setcountdown’:
+../src/main.c:196:3: warning: implicit declaration of function ‘sleep’ [-Wimplicit-function-declaration]
+   sleep(4);
+   ^~~~~
+make: *** [src/main.o] Error 1
+src/subdir.mk:21: recipe for target 'src/main.o' failed
+
+15:46:36 Build Finished (took 782ms)
+

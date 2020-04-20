@@ -1,0 +1,78 @@
+#include<stdio.h>
+#include <stdint.h>
+#include <pthread.h>
+#include<unistd.h>
+#include"leds_control.h"
+char recep_tab[5];
+static pthread_mutex_t mutex= PTHREAD_MUTEX_INITIALIZER;
+int pthread_mutex_unlock (pthread_mutex_t * mutex);
+int pthread_mutex_lock (pthread_mutex_t * mutex);
+
+typedef struct{
+	int RValue;
+	int GValue;
+	int BValue;
+}Color;
+
+
+//le rgb des couleurs
+
+const Color red ={255,0,0};
+const Color green={0,255,0};
+const Color blue={0,0,255};
+const Color white={255,255,255};
+const Color purple={255,0,255};
+const Color yellow={255,255,0};
+const Color black={0,0,0};
+
+​
+//fonction qui incremente chaque colone de led
+void setledline(Color **matrice,int tabsize){
+	for(int row=0; row< tabsize;row++){
+		for(int col=0;col<tabsize;col++){
+			setLedColor((row + 1),(col + 1),matrice[row][col].RValue,matrice[row][col].GValue,matrice[row][col].BValue);
+		}
+	}
+
+}
+
+void *thread_send(void *arg) {
+	//pthread_mutex_lock (&mutex);
+	setLedColor(3,2,255,0,0);
+	//pthread_mutex_unlock (&mutex);
+	return NULL;
+}
+
+void *thread_read(void *arg) {
+	//pthread_mutex_lock (&mutex);
+	while(1){
+		if(readbutton(recep_tab,5)==LCRC_OK){
+			printf("%d %d %d %d",recep_tab[0],recep_tab[1],recep_tab[2],recep_tab[3]);
+
+
+		}
+	}
+	//	pthread_mutex_unlock (&mutex);
+	return NULL;
+
+}
+void *thread_application(void *arg){
+
+}
+
+int main(int argc, char *argv[]) {
+
+	pthread_t t1, t2;
+	openLink();
+
+	pthread_create(&t1, NULL, &thread_send, NULL);
+	pthread_create(&t2, NULL, &thread_read, NULL);
+
+
+	pthread_join(t1, NULL);
+	pthread_join(t2, NULL);
+	closeLink();
+	return 0;
+}
+
+

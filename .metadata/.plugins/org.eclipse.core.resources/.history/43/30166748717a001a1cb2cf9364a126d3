@@ -1,0 +1,20 @@
+/*
+ * thread.h
+ *
+ *  Created on: Apr 9, 2020
+ *      Author: mickaell
+ */
+
+#ifndef THREAD_H_
+#define THREAD_H_
+#define INC_VALUE 10
+#define DEC_VALUE 15
+#include"leds_control.h"
+#include "FIFO.h"
+void *thread_send(void *arg);
+void *thread_read(void *arg);
+void *thread_app(void *arg);
+void set_all_black(void);
+void set_number(compteur);
+
+#endif /* THREAD_H_ */

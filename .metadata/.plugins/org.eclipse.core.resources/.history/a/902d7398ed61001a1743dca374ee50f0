@@ -1,0 +1,22 @@
+
+
+#include<stdio.h>
+
+int main(void){
+
+typedef struct compte{
+
+	int nombre;
+	struct Pile *prec;
+
+}nombre;
+
+
+nombre->nombre=10;
+
+for ( i=10 ; i==0;i--){
+	printf (nombre);
+}
+
+	return 0;
+}

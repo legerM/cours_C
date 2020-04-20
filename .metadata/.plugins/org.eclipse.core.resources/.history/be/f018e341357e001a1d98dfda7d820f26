@@ -1,0 +1,26 @@
+#ifndef FIFO_H_
+#define FIFO_H_
+#include<stdio.h>
+#include <stdlib.h>
+#include<string.h>
+#include <pthread.h>
+#include<unistd.h>
+struct List liste;
+struct Element {
+
+	int value;
+	struct Element *next_p;
+};
+
+struct List{
+	pthread_mutex_t mutex;
+	struct Element *head;
+	struct Element *tail;
+};
+
+void *thread_send(void *arg);
+void *thread_pop(void *arg);
+void push_element(struct List* liste, int value);
+int pop_element(struct List* liste,int *value);
+void init_liste(struct List *liste);
+#endif /* FIFO_H_ */

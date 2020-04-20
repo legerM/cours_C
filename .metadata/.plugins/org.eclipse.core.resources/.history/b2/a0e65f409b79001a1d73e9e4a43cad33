@@ -1,0 +1,77 @@
+#include<stdio.h>
+#include <stdlib.h>
+#include<string.h>
+#include "FIFO.h"
+#include <pthread.h>
+#include<unistd.h>
+#include<semaphore.h>
+
+int pthread_mutex_unlock (pthread_mutex_t * mutex);
+int pthread_mutex_lock (pthread_mutex_t * mutex);
+
+
+int pop_element(struct List* liste) {
+	int result_value; // va contenir la valeur du dernier element de la liste
+	struct Element* tmp;
+	if (liste->head == 0) {
+		return -1; /* Retourne -1 si la pile est vide. */
+	}
+	tmp = liste->head->next_p;
+	result_value = liste->head->value;
+	free(liste->head);
+	liste->head = tmp;/* Le pointeur pointe sur le dernier élément. */
+	return result_value;/* Retourne la valeur soutirée de la pile. */
+}
+
+void push_element(struct List *liste, int value) {
+
+	struct Element*  new_element = malloc(sizeof(struct Element)); //new_element contient l'adresse memoire des 8 octets crée
+	if (new_element) {                 // si le malloc contient bien une adresse
+		new_element->value = value;                      //valeur du struct
+		new_element->next_p = 0;                  // adresse du prochain element
+		if (liste->head == 0) {                          // si la liste est vide
+			liste->tail = new_element; //on attache le nouvel element a la queue de liste
+			liste->head = new_element;              // on attache la tete aussi
+		} else {                        //si la liste contient deja des elements
+
+			liste->tail->next_p = new_element;
+			liste->tail = new_element;
+		}
+	}
+
+}
+void init_liste(struct List *liste){
+	liste->mutex= PTHREAD_MUTEX_INITIALIZER;
+	liste->head = 0;
+	liste->tail = 0;
+
+}
+void *thread_send(void *arg) {
+	while(1){
+		for(int i=0;i<10;i++){
+
+			push_element(&liste, i);
+
+			printf("push %d \n", i);
+
+		}
+		sleep(12);
+	}
+
+}
+
+void *thread_pop(void *arg){
+	int result_pop;
+	sleep(0.5);
+	while(1){
+
+		result_pop=pop_element(&liste);
+
+		sleep(1);
+		if(result_pop !=-1){
+			printf("pop %d \n",result_pop);
+		}
+	}
+
+
+}

@@ -1,0 +1,25 @@
+
+
+#include<stdio.h>
+
+struct compte{
+
+	int nombre;
+	struct compte *prec;
+
+};
+
+int main(void){
+
+
+
+struct compte*a = (struct compte*) malloc(sizeof(struct compte));
+a->nombre=10;
+a->prec=NULL;
+
+for(i=10;i==0;i--){
+	a->nombre -1;
+	printf(a->nombre);
+}
+	return 0;
+}

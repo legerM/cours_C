@@ -1,7 +1,11 @@
-16:03:41 **** Incremental Build of configuration Debug for project 71_distance_point.c ****
+16:17:13 **** Incremental Build of configuration Debug for project megazorg ****
 make -j4 all 
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
-gcc  -o "71_distance_point.c"  ./src/main.o   -lm
-16:03:42 **** Incremental Build of configuration Debug for project 71_distance_point.c ****
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/game_p4.d" -MT"src/game_p4.o" -o "src/game_p4.o" "../src/game_p4.c"
+gcc  -o "megazorg"  ./src/FIFO.o ./src/decompte.o ./src/game_p4.o ./src/leds_control.o ./src/main.o ./src/thread.o   -lpthread
+16:17:18 **** Incremental Build of configuration Debug for project megazorg ****
 make -j4 all 
 make: Nothing to be done for 'all'.
+16:18:16 **** Incremental Build of configuration Debug for project megazorg ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/thread.d" -MT"src/thread.o" -o "src/thread.o" "../src/thread.c"
+gcc  -o "megazorg"  ./src/FIFO.o ./src/decompte.o ./src/game_p4.o ./src/leds_control.o ./src/main.o ./src/thread.o   -lpthread

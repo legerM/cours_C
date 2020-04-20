@@ -1,7 +1,6 @@
-14:07:46 **** Build of configuration Debug for project test ****
+14:18:20 **** Incremental Build of configuration Debug for project test ****
 make -j4 all 
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
-gcc  -o "test"  ./src/main.o   
+make: Nothing to be done for 'all'.
 
-14:07:47 Build Finished (took 588ms)
+14:18:21 Build Finished (took 641ms)
 

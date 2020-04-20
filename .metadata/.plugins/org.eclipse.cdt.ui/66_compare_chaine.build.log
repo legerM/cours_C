@@ -1,0 +1,17 @@
+15:55:36 **** Incremental Build of configuration Debug for project 66_compare_chaine ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/compare_chaine.d" -MT"src/compare_chaine.o" -o "src/compare_chaine.o" "../src/compare_chaine.c"
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.c"
+../src/compare_chaine.c:11:5: error: conflicting types for ‘comparer’
+ int comparer(const char s1[],const char s2[]){
+     ^~~~~~~~
+In file included from ../src/compare_chaine.c:7:0:
+../src/compare_chaine.h:11:5: note: previous declaration of ‘comparer’ was here
+ int comparer(const char s1[], char s2[] );
+     ^~~~~~~~
+src/subdir.mk:21: recipe for target 'src/compare_chaine.o' failed
+make: *** [src/compare_chaine.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+15:55:36 Build Finished (took 656ms)
+

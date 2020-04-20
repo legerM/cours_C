@@ -1,0 +1,72 @@
+#include "leds_control.h"
+#include<stdio.h>
+
+typedef struct{
+	int RValue;
+	int GValue;
+	int BValue;
+}Color;
+
+const Color red ={255,0,0};
+const Color green={0,255,0};
+const Color blue={0,0,255};
+const Color white={255,255,255};
+const Color purple={255,0,255};
+const Color yellow={255,255,0};
+const Color black={0,0,0};
+
+void setledline(Color **matrice,int tabsize){
+	for(int row=0; row< tabsize;row++){
+		for(int col=0;col<tabsize;col++){
+			setLedColor((row + 1),(col + 1),matrice[row][col].RValue,matrice[row][col].GValue,matrice[row][col].BValue);
+		}
+	}
+
+}
+
+void setnumber(int tabsize){
+	for (int decompte = 9;decompte > 0;decompte --){
+		if(decompte == 9){
+			Color tabline_1[7]={black,black,red,red,red,red,black};
+			Color tabline_2[7]={black,red,black,black,black,red,black};
+			Color tabline_3[7]={black,red,black,black,black,red,black};
+			Color tabline_4[7]={black,black,red,red,red,red,black};
+			Color tabline_5[7]={black,black,black,black,black,red,black};
+			Color tabline_6[7]={black,black,black,black,black,red,black};
+			Color tabline_7[7]={black,black,black,black,red,red,black};
+
+			Color * matrice[7]={tabline_1,tabline_2,tabline_3,tabline_4,tabline_5,tabline_6,tabline_7};
+			setledline(matrice,tabsize);
+		}
+
+	}
+
+}
+int main(void){
+	int tabsize=7;
+
+
+	Color tabline_1[7]={red,red,red,red,red,red,red};
+	Color tabline_2[7]={red,red,red,red,red,red,red};
+	Color tabline_3[7]={red,red,red,red,red,red,red};
+	Color tabline_4[7]={red,red,red,red,red,red,red};
+	Color tabline_5[7]={red,red,red,red,red,red,red};
+	Color tabline_6[7]={red,red,red,red,red,red,red};
+	Color tabline_7[7]={red,red,red,red,red,red,red};
+
+	Color * matrice[7]={tabline_1,tabline_2,tabline_3,tabline_4,tabline_5,tabline_6,tabline_7};
+
+	setnumber(tabsize);
+
+
+
+
+
+
+
+
+
+
+
+	return 0;
+}
