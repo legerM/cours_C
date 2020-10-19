@@ -39,6 +39,11 @@ typedef struct{
 	int BValue;
 }Color;
 
+typedef enum{
+	ON,
+	OFF,
+	BLINK
+}token_mod_t;
 
 typedef enum {
 	live, //!< Need to continue game
@@ -47,17 +52,29 @@ typedef enum {
 } status_t;
 
 typedef enum {
-	horiz ,
 	vert,
+	horiz,
 	right_diag,
 	left_diag,
 } victory_t;
 
-//typedef enum {
-//	NO_PLAYER,
-//	PLAYER_1,
-//	PLAYER_2,
-//} player_t;
+typedef enum {
+	NO_PLAYER,
+	PLAYER_1,
+	PLAYER_2,
+} player_t;
+
+typedef enum {
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT,
+}direction_t;
+
+typedef struct{
+	player_t player;
+	direction_t direction;
+}player_data_msg;
 
 typedef struct {
 	int8_t l;
@@ -67,7 +84,7 @@ typedef struct {
 typedef struct {
 	status_t status; //!< status of winner
 	victory_t win_type; //<!
-//	player_t win_player; //<! the winner player
+	player_t win_player; //<! the winner player
 	point_t win_position[4]; //!< position of 4 winner tiken
 } winner_t;
 
@@ -80,6 +97,7 @@ typedef struct{
 typedef struct{
 	pos_token_played_t position;
 	Color color;
+	token_mod_t mode;
 }token_t;
 
 pos_token_played_t  gp4_move_right(void);
@@ -88,5 +106,8 @@ pos_token_played_t  gp4_move_left(void) ;
 //joue le token
 pos_token_played_t  gp4_play_token(void);
 pos_token_played_t  gp4_next_player(void);
-
+winner_t check_winner_vertically(void);
+winner_t gp4_check_winner(void);
+winner_t gp4_check_diagonals_right_and_left(void);
+winner_t gp4_check_horizontally(void);
 #endif /* GAME_P4_H_ */

@@ -16,21 +16,27 @@ sem_t sem_app;
 
 
 int main(int argc, char *argv[]) {
-//	init_matrix();
+	init_matrix();
+
 	init_liste(&liste_app);
 	init_liste(&liste_send);
+
 	sem_init(&sem_read, 0, 0);
 	sem_init(&sem_app,0,0);
-	pthread_t t1, t2, t3;
+
+	pthread_t t1, t2, t3,t4;
+
 	openLink();
 
 	pthread_create(&t1, NULL, &thread_read, NULL);
-	pthread_create(&t2, NULL, &thread_send, NULL);
+	pthread_create(&t2, NULL, &thread_display, NULL);
 	pthread_create(&t3, NULL, &thread_app,  NULL);
+	pthread_create(&t4, NULL, &thread_timer, NULL);
 
 	pthread_join(t1, NULL);
 	pthread_join(t2, NULL);
 	pthread_join(t3, NULL);
+	pthread_join(t4, NULL);
 	closeLink();
 
 	return 0;

@@ -1,0 +1,94 @@
+/*
+ * thread.h
+ *
+ *  Created on: Apr 9, 2020
+ *      Author: mickaell
+ */
+
+#ifndef THREAD_H_
+#define THREAD_H_
+//#define UP 1
+//#define DOWN 2
+//#define RIGHT 3
+//#define LEFT 4
+#include"game_p4.h"
+
+extern const Color red;
+
+#define PLAYER_COLOR_1 red
+#define PLAYER_COLOR_2 green
+#define BACKGROUND black
+#define TAB_SIZE 6
+#define TIMER_MAX 4
+//#include "cmsis_os.h"
+//#include"leds_control.h"
+//#include<stdbool.h>
+//
+
+
+void *thread_timer(void *arg);
+void init_matrix(void);
+void set_all_black(void);
+
+
+#define SIZEOFMESSAGE 10
+
+typedef enum QUEUE_ID{
+	QUEUE_READ ,
+	QUEUE_SEND,
+}QUEUE_ID;
+
+typedef enum {
+	msg_player,
+	msg_move_token,
+	msg_timer,
+}msg_type;
+
+typedef enum{
+	IDLE_TIMER,
+	ROUND_TIMER,
+
+}timer;
+
+struct Element {
+	msg_type msg;
+	union {
+		timer timer_id;
+		player_data_msg player;
+		token_t token;
+		char value[SIZEOFMESSAGE];
+	} data;
+
+	struct Element *next_p;
+};
+
+
+typedef enum{
+	START = 3,
+	STOP = 4 ,
+}Status;
+
+typedef enum{
+	thd_app,
+	thd_display,
+}Owner;
+
+typedef struct {
+	int8_t ID;
+	Status status;
+	int8_t countdown;
+	Owner owner;
+}Timer;
+//
+//typedef enum{
+//	ON,
+//	OFF,
+//	BLINK
+//}token_mod_t;
+void compute_message(struct Element* message, pos_token_played_t* data);
+void setledmatrix(struct Element *message);
+void check_win(const winner_t* winner_status, struct Element* send_value);
+void start_timer(int8_t timer_id,int8_t countdown,Owner owner);
+void stop_timer(int8_t timer_id);
+void start_game(void);
+#endif /* THREAD_H_ */

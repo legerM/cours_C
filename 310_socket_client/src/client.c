@@ -58,24 +58,34 @@ int connect_socket(void) {
 
 int send_message(int socket_desc, char* message) {
 	//Send some data
+	int compteur=0;
 	int send_status = -1;
 	int error_send_message;
+
 	int lenght = strlen(message);
 	while (1) {
-		send_status = send(socket_desc, message, lenght, 0) < 0;
-	if (send_status == -1) {
-		error_send_message = errno;
-		error_printf("Send failed. error n° : %i , %s", error_send_message,
-				strerror(error_send_message));
-		return send_status;
+		compteur++;
+		char nombre[100];
+		sprintf(nombre,"msg=%d",compteur);
+		int lenghtNombre = strlen(nombre);
+		strncat(&nombre[lenghtNombre],message,100-lenghtNombre-1);
+		lenght = strlen(nombre);
+
+		send_status = send(socket_desc, nombre, lenght, 0) < 0;
+		error_printf("%d",send_status);
+		if (send_status == -1) {
+			error_send_message = errno;
+			error_printf("Send failed. error n° : %i , %s", error_send_message,
+					strerror(error_send_message));
+			return send_status;
+		}
+		else if (send_status == lenght){
+			debug_printf(1, "Data Sent\n");
+			return send_status;
+
+
+		}
+
+		sleep(2);
 	}
-	else if (send_status == lenght){
-		debug_printf(1, "Data Sent\n");
-		return send_status;
-
-
-	}
-
-	sleep(2);
-}
 }

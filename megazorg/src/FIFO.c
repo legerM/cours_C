@@ -19,6 +19,8 @@ void init_liste(struct List *liste){
 	liste->tail = NULL;
 
 }
+
+
 int pop_element(struct List* liste,struct Element *value_to_return) {
 
 	struct Element* tmp;

@@ -1,0 +1,229 @@
+/*
+ * thread.c
+ *
+ *  Created on: Apr 9, 2020
+ *      Author: mickaell
+ */
+
+#include<stdio.h>
+#include <stdint.h>
+#include<unistd.h>
+#include"leds_control.h"
+#include "thread.h"
+#include "game_p4.h"
+#include "cmsis_os.h"
+#include<stdbool.h>
+
+
+extern osMessageQueueId_t Queue_sendHandle;
+extern osMessageQueueId_t Queue_appHandle;
+
+
+char recep_tab[5];
+Timer timer_table[TIMER_MAX];
+
+//Color matrix[COL_COUNT][LINE_COUNT];
+Color matrix_led[COL_COUNT][LINE_COUNT + 1 ];
+Color actual_display[COL_COUNT][LINE_COUNT + 1 ];
+int8_t active_player;
+
+//pthread_mutex_t mutex_timer ;
+
+//le rgb des couleurs
+//
+//const Color red = { 255, 0, 0 };
+//const Color green = { 0, 255, 0 };
+////const Color blue = { 0, 0, 255 };
+////const Color white = { 255, 255, 255 };
+////const Color purple = { 255, 0, 255 };
+////const Color yellow = { 255, 255, 0 };
+//const Color black = { 0, 0, 0 };
+
+
+void init_matrix(void) {
+	for (int row = 0; row < 7; row++) {
+		for (int col = 0; col < 7; col++) {
+			matrix_led[row][col].RValue = black.RValue;
+			matrix_led[row][col].GValue = black.GValue;
+			matrix_led[row][col].BValue = black.BValue;
+			actual_display[row][col].RValue = black.RValue;
+			actual_display[row][col].GValue = black.GValue;
+			actual_display[row][col].BValue = black.BValue;
+		}
+	}
+}
+
+void set_all_black(void) {
+	for (int row = 0; row < 7; row++) {
+		for (int col = 0; col < 7; col++) {
+			setLedColor((row + 1), (col + 1), 0, 0, 0);
+		}
+	}
+}
+
+void check_win(const winner_t* winner_status, struct Element* send_value) {
+	if (winner_status->win_type == horiz) {
+		printf("player win horiz\n");
+		active_player = NO_PLAYER;
+	} else if (winner_status->win_type == vert) {
+		printf("player win vert\n");
+		active_player = NO_PLAYER;
+	} else if (winner_status->win_type == right_diag) {
+		printf("player win right diag\n");
+		active_player = NO_PLAYER;
+	} else if (winner_status->win_type == left_diag) {
+		printf("player win left diag\n");
+		active_player = NO_PLAYER;
+	}
+
+	if (active_player == PLAYER_1) {
+		send_value->data.token.color = PLAYER_COLOR_1;
+	} else if (active_player == PLAYER_2) {
+		send_value->data.token.color = PLAYER_COLOR_2;
+	}
+}
+
+//
+//
+//void stop_timer(int8_t timer_id){
+//	pthread_mutex_lock (&mutex_timer);
+//	timer_table[timer_id].status = STOP;
+//	pthread_mutex_unlock (&mutex_timer);
+//
+//}
+//void start_timer(int8_t timer_id,int8_t countdown,Owner owner){
+//	pthread_mutex_lock (&mutex_timer);
+//	timer_table[timer_id].countdown = countdown;
+//	timer_table[timer_id].owner = owner;
+//	timer_table[timer_id].status = START;
+//	pthread_mutex_unlock (&mutex_timer);
+//}
+//void *thread_timer(void *arg){
+//	struct Element msg_blink;
+//
+//	while(1){
+//		pthread_mutex_lock (&mutex_timer);
+//		for(int8_t i=0;i<TIMER_MAX;i ++){
+//			if (timer_table[i].status == START){
+//				if(timer_table[i].countdown == 0 ){
+//					msg_blink.msg =msg_timer;
+//					msg_blink.data.timer_id=i;
+//					if(timer_table[i].owner == thd_app){
+//						send_message(QUEUE_READ,&msg_blink,SIZEOFMESSAGE);
+//					}
+//					else if(timer_table[i].owner == thd_display){
+//						send_message(QUEUE_SEND,&msg_blink,SIZEOFMESSAGE);
+//					}
+//					timer_table[i].status=STOP;
+//				}
+//				else{
+//					timer_table[i].countdown --;
+//				}
+//			}
+//		}
+//		pthread_mutex_unlock (&mutex_timer);
+//		usleep(1000000);
+//	}
+//
+//
+//}
+
+void compute_message(struct Element* message, pos_token_played_t* data) {
+	message->data.token.position.beg_position.l = data->beg_position.l;
+	message->data.token.position.beg_position.c = data->beg_position.c;
+	message->data.token.position.end_position.l = data->end_position.l;
+	message->data.token.position.end_position.c = data->end_position.c;
+}
+//// pour le puissance 4
+
+void setledmatrix(struct Element *message) {
+	int beg_row = message->data.token.position.beg_position.l;
+	int beg_col = message->data.token.position.beg_position.c;
+	int end_row = message->data.token.position.end_position.l;
+	int end_col = message->data.token.position.end_position.c;
+	if (beg_row == 10 && beg_col == 10) {
+	} else {
+		matrix_led[beg_row ][beg_col] = BACKGROUND;
+	}
+	matrix_led[end_row ][end_col] = message->data.token.color;
+}
+//
+//void send_message(QUEUE_ID liste, struct Element *value_to_push,
+//		int message_lenght) {
+//		if (message_lenght <= SIZEOFMESSAGE) {
+//	if (liste == QUEUE_READ) {
+//		push_element(&liste_app, value_to_push);
+//
+//	} else if (liste == QUEUE_SEND) {
+//		push_element(&liste_send, value_to_push);
+//
+//	}
+//
+//		}
+//		else{
+//			printf("mauvaise taille de message");
+//		}
+//}
+//
+//int receive_message(QUEUE_ID liste, struct Element* value_to_return,
+//		int message_lenght) {
+//	int pop_status = 0;
+//		if(message_lenght >= SIZEOFMESSAGE){
+//
+//	if (liste == QUEUE_READ) {
+//		sem_wait(&sem_read);
+//		pop_status = pop_element(&liste_app, value_to_return);
+//	} else if (liste == QUEUE_SEND) {
+//		sem_wait(&sem_app);
+//		pop_status = pop_element(&liste_send, value_to_return);
+//
+//	}
+//		}
+//	return pop_status;
+//}
+//
+
+void start_game(void){
+	init_matrix();
+	gp4_init();
+	active_player = PLAYER_1;
+}
+
+
+void send_message(QUEUE_ID liste, struct Element *value_to_push,
+		int message_lenght) {
+		if (message_lenght <= SIZEOFMESSAGE) {
+	if (liste == QUEUE_READ) {
+//		push_element(&liste_app, value_to_push);
+		osMessageQueuePut(&Queue_appHandle,value_to_push,0,0);
+	} else if (liste == QUEUE_SEND) {
+		osMessageQueuePut(&Queue_sendHandle,value_to_push,0,0);
+//		push_element(&liste_send, value_to_push);
+
+	}
+
+		}
+		else{
+			printf("mauvaise taille de message");
+		}
+}
+
+int receive_message(QUEUE_ID liste, struct Element* value_to_return,
+		int message_lenght) {
+	int pop_status = 0;
+		if(message_lenght >= SIZEOFMESSAGE){
+
+	if (liste == QUEUE_READ) {
+		osMessageQueueGet(&Queue_appHandle,value_to_return,0,0);
+//		pop_status = pop_element(&liste_app, value_to_return);
+	} else if (liste == QUEUE_SEND) {
+		osMessageQueueGet(&Queue_sendHandle,value_to_return,0,0);
+
+//		pop_status = pop_element(&liste_send, value_to_return);
+
+	}
+		}
+	return pop_status;
+}
+
+

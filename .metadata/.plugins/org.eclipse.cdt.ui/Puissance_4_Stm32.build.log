@@ -1,0 +1,10 @@
+13:24:32 **** Incremental Build of configuration Debug for project Puissance_4_Stm32 ****
+Info: Internal Builder is used for build
+arm-atollic-eabi-gcc -c ../Drivers/CMSIS/DSP/DSP_Lib_TestSuite/RefLibs/src/FilteringFunctions/fir_sparse.c -std=gnu11 -O0 -g -fstack-usage -Wall -specs=nano.specs -o Drivers/CMSIS/DSP/DSP_Lib_TestSuite/RefLibs/src/FilteringFunctions/fir_sparse.o 
+../Drivers/CMSIS/DSP/DSP_Lib_TestSuite/RefLibs/src/FilteringFunctions/fir_sparse.c:1:17: fatal error: ref.h: No such file or directory
+ #include "ref.h"
+                 ^
+compilation terminated.
+
+13:24:33 Build Finished (took 681ms)
+

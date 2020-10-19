@@ -1,0 +1,7 @@
+15:42:45 **** Incremental Build of configuration Debug for project 320_socket_serveur ****
+make -j4 all 
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/serveur.d" -MT"src/serveur.o" -o "src/serveur.o" "../src/serveur.c"
+gcc  -o "320_socket_serveur"  ./src/main.o ./src/serveur.o   
+
+15:42:45 Build Finished (took 671ms)
+

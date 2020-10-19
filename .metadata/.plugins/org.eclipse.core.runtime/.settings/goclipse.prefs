@@ -1,9 +1,9 @@
 eclipse.preferences.version=1
-syntax_highlighting_builtin_function_color=243,246,238
-syntax_highlighting_comment_color=153,150,139
-syntax_highlighting_keyword_color=138,198,242
-syntax_highlighting_multiline_string_color=149,228,84
-syntax_highlighting_primitive_color=240,128,128
-syntax_highlighting_string_color=149,228,84
-syntax_highlighting_text_color=246,243,232
-syntax_highlighting_value_color=240,128,128
+syntax_highlighting_builtin_function_color=103,140,177
+syntax_highlighting_comment_color=125,140,147
+syntax_highlighting_keyword_color=147,199,99
+syntax_highlighting_multiline_string_color=236,118,0
+syntax_highlighting_primitive_color=255,205,34
+syntax_highlighting_string_color=236,118,0
+syntax_highlighting_text_color=224,226,228
+syntax_highlighting_value_color=255,205,34

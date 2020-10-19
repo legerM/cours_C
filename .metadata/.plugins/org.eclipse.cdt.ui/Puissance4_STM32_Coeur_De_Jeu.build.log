@@ -1,0 +1,84 @@
+14:09:06 **** Incremental Build of configuration Debug for project Puissance4_STM32_Coeur_De_Jeu ****
+Info: Internal Builder is used for build
+arm-atollic-eabi-gcc -c -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F429xx -I../Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -Os -ffunction-sections -fdata-sections -g -fstack-usage -Wall -specs=nano.specs -o Src/thread.o ../Src/thread.c 
+In file included from ../Src/FIFO.h:9:0,
+                 from ../Src/thread.c:13:
+../Src/game_p4.h:24:1: error: unknown type name 'pos_token_played_t'
+ pos_token_played_t  gp4_move_right(void);
+ ^~~~~~~~~~~~~~~~~~
+../Src/game_p4.h:26:1: error: unknown type name 'pos_token_played_t'
+ pos_token_played_t  gp4_move_left(void) ;
+ ^~~~~~~~~~~~~~~~~~
+../Src/game_p4.h:28:1: error: unknown type name 'pos_token_played_t'
+ pos_token_played_t  gp4_play_token(void);
+ ^~~~~~~~~~~~~~~~~~
+../Src/game_p4.h:29:1: error: unknown type name 'pos_token_played_t'
+ pos_token_played_t  gp4_next_player(void);
+ ^~~~~~~~~~~~~~~~~~
+../Src/game_p4.h:30:1: error: unknown type name 'winner_t'
+ winner_t check_winner_vertically(void);
+ ^~~~~~~~
+../Src/game_p4.h:31:1: error: unknown type name 'winner_t'
+ winner_t gp4_check_winner(void);
+ ^~~~~~~~
+../Src/game_p4.h:32:1: error: unknown type name 'winner_t'
+ winner_t gp4_check_diagonals_right_and_left(void);
+ ^~~~~~~~
+../Src/game_p4.h:33:1: error: unknown type name 'winner_t'
+ winner_t gp4_check_horizontally(void);
+ ^~~~~~~~
+In file included from ../Src/thread.c:13:0:
+../Src/FIFO.h:40:2: error: unknown type name 'osThreadId_t'
+  osThreadId_t mutex;
+  ^~~~~~~~~~~~
+../Src/thread.c:26:1: error: unknown type name 'pthread_mutex_t'
+ pthread_mutex_t mutex_timer ;
+ ^~~~~~~~~~~~~~~
+../Src/thread.c: In function 'thread_app':
+../Src/thread.c:114:19: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+      played_token = gp4_play_token();
+                   ^
+../Src/thread.c:117:19: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+      played_token = gp4_next_player();
+                   ^
+../Src/thread.c:118:19: error: incompatible types when assigning to type 'winner_t {aka struct <anonymous>}' from type 'int'
+      winner_status=gp4_check_winner();
+                   ^
+../Src/thread.c:119:6: warning: implicit declaration of function 'check_win' [-Wimplicit-function-declaration]
+      check_win(&winner_status, &send_value);
+      ^~~~~~~~~
+../Src/thread.c:128:20: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+       played_token = gp4_play_token();
+                    ^
+../Src/thread.c:131:19: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+       played_token=gp4_next_player();
+                   ^
+../Src/thread.c:132:20: error: incompatible types when assigning to type 'winner_t {aka struct <anonymous>}' from type 'int'
+       winner_status=gp4_check_winner();
+                    ^
+../Src/thread.c:164:20: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+       played_token = gp4_move_right();
+                    ^
+../Src/thread.c:169:20: error: incompatible types when assigning to type 'pos_token_played_t {aka struct <anonymous>}' from type 'int'
+       played_token = gp4_move_left();
+                    ^
+../Src/thread.c:178:6: warning: implicit declaration of function 'gp4_display' [-Wimplicit-function-declaration]
+      gp4_display();
+      ^~~~~~~~~~~
+../Src/thread.c: In function 'stop_timer':
+../Src/thread.c:235:2: warning: implicit declaration of function 'pthread_mutex_lock' [-Wimplicit-function-declaration]
+  pthread_mutex_lock (&mutex_timer);
+  ^~~~~~~~~~~~~~~~~~
+../Src/thread.c:237:2: warning: implicit declaration of function 'pthread_mutex_unlock' [-Wimplicit-function-declaration]
+  pthread_mutex_unlock (&mutex_timer);
+  ^~~~~~~~~~~~~~~~~~~~
+../Src/thread.c: At top level:
+../Src/thread.c:300:6: warning: conflicting types for 'check_win'
+ void check_win(const winner_t* winner_status, struct Element* send_value) {
+      ^~~~~~~~~
+../Src/thread.c:119:6: note: previous implicit declaration of 'check_win' was here
+      check_win(&winner_status, &send_value);
+      ^~~~~~~~~
+
+14:09:06 Build Finished (took 638ms)
+

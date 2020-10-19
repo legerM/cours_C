@@ -8,14 +8,17 @@
 // IPv4 AF_INET sockets:
 
 int main(int argc, char *argv[]) {
-	char *message = "mooooooordu\n";
-	debug_setlevel(5) ;
-	int socket_desc = create_socket();
 
-	connect_socket(socket_desc);
+	char *message = "mooooooordu\n";
+
+	debug_setlevel(1) ;
+
+	int socket_desc = connect_socket();
+	printf("1");
 	//Send some data
 	send_message(socket_desc, message);
 
 	return 0;
 
 }
+
