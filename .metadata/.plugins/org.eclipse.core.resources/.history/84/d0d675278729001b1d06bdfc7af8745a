@@ -1,0 +1,20 @@
+/*
+ * driverFunc.h
+ *
+ *  Created on: Nov 18, 2020
+ *      Author: mickaell
+ */
+
+#ifndef SRC_DRIVERFUNC_H_
+#define SRC_DRIVERFUNC_H_
+
+#define TRUE 1
+#define FALSE 0
+#define HIGH_TIME 8
+#define LOW_TIME 3
+
+void send_message(char *value_to_push,int message_lenght);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void reveive_message(char * msg_to_reveive, int lenght);
+
+#endif /* SRC_DRIVERFUNC_H_ */

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;Puissance4_STM32_Coeur_De_Jeu&apos;" deleteContents="false" description="Delete resource &apos;Puissance4_STM32_Coeur_De_Jeu&apos;" element1="/Puissance4_STM32_Coeur_De_Jeu" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1604909541222"/>
+</session>

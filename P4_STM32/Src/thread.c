@@ -69,16 +69,16 @@ void set_all_red(void) {
 }
 void check_win(const winner_t* winner_status, struct Element* send_value) {
 	if (winner_status->win_type == horiz) {
-//		printf("player win horiz\n");
+		//		printf("player win horiz\n");
 		active_player = NO_PLAYER;
 	} else if (winner_status->win_type == vert) {
-//		printf("player win vert\n");
+		//		printf("player win vert\n");
 		active_player = NO_PLAYER;
 	} else if (winner_status->win_type == right_diag) {
-//		printf("player win right diag\n");
+		//		printf("player win right diag\n");
 		active_player = NO_PLAYER;
 	} else if (winner_status->win_type == left_diag) {
-//		printf("player win left diag\n");
+		//		printf("player win left diag\n");
 		active_player = NO_PLAYER;
 	}
 
@@ -190,7 +190,7 @@ void setledmatrix(struct Element *message) {
 //
 
 void start_game(void){
-//	init_matrix();
+	//	init_matrix();
 	set_all_black();
 	gp4_init();
 	active_player = PLAYER_1;
@@ -199,37 +199,49 @@ void start_game(void){
 
 void send_message(QUEUE_ID liste, struct Element *value_to_push,
 		int message_lenght) {
-		if (message_lenght <= SIZEOFMESSAGE) {
-	if (liste == QUEUE_READ) {
-//		push_element(&liste_app, value_to_push);
-		osMessageQueuePut(Queue_appHandle,value_to_push,0,10);
-	} else if (liste == QUEUE_SEND) {
-		osMessageQueuePut(Queue_sendHandle,value_to_push,0,10);
-//		push_element(&liste_send, value_to_push);
+	if (message_lenght <= SIZEOFMESSAGE) {
+		if (liste == QUEUE_READ) {
+			//		push_element(&liste_app, value_to_push);
+			osMessageQueuePut(Queue_appHandle,value_to_push,0,10);
+		} else if (liste == QUEUE_SEND) {
+			osMessageQueuePut(Queue_sendHandle,value_to_push,0,10);
+			//		push_element(&liste_send, value_to_push);
+
+		}
 
 	}
-
-		}
-		else{
-//			printf("mauvaise taille de message");
-		}
+	else{
+		//			printf("mauvaise taille de message");
+	}
 }
 
 int receive_message(QUEUE_ID liste, struct Element* value_to_return,
 		int message_lenght) {
 	int pop_status = 0;
-		if(message_lenght >= SIZEOFMESSAGE){
+	osStatus_t state ;
+	if(message_lenght >= SIZEOFMESSAGE){
 
-	if (liste == QUEUE_READ) {
-		osMessageQueueGet(Queue_appHandle,value_to_return,0,10);
-//		pop_status = pop_element(&liste_app, value_to_return);
-	} else if (liste == QUEUE_SEND) {
-		osMessageQueueGet(Queue_sendHandle,value_to_return,0,10);
+		if (liste == QUEUE_READ) {
+			state = osMessageQueueGet(Queue_appHandle,value_to_return,0,10);
+			if(state == osErrorTimeout ){
 
-//		pop_status = pop_element(&liste_send, value_to_return);
+			}
+			else{
+				pop_status =1;
+			}
+			//		pop_status = pop_element(&liste_app, value_to_return);
+		} else if (liste == QUEUE_SEND) {
+			state =osMessageQueueGet(Queue_sendHandle,value_to_return,0,10);
+			if(state == osErrorTimeout ){
 
-	}
+			}
+			else{
+				pop_status = 1;
+			}
+			//					pop_status = pop_element(&liste_send, value_to_return);
+
 		}
+	}
 	return pop_status;
 }
 

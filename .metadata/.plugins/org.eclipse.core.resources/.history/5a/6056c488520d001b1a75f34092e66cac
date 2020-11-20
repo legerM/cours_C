@@ -1,6 +1,0 @@
-
-#ifndef SERVER_H_
-#define SRV_PORT 5001
-int connect_server();
-#define SIZEBUFFER 2000
-#endif

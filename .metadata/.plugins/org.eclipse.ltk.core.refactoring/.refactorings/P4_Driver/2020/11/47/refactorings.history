@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;ihm_embed/Core/Src/DriverFunc&apos; to &apos;DriverFunc.c&apos;" description="Rename resource &apos;DriverFunc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Src/DriverFunc" name="DriverFunc.c" stamp="1605693962936" updateReferences="true"/>
+</session>

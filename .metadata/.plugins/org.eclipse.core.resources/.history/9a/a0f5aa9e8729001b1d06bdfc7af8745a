@@ -1,0 +1,26 @@
+/*
+ * driverFunc.c
+ *
+ *  Created on: Nov 18, 2020
+ *      Author: mickaell
+ */
+#include "driverFunc.h"
+
+extern osMessageQueueId_t msgtosendHandle;
+extern osMessageQueueId_t msgtoreceiveHandle;
+
+void send_message(char *value_to_push,
+		int message_lenght) {
+	if (message_lenght <= 10) {
+		//		push_element(&liste_app, value_to_push);
+		osMessageQueuePut(msgtosendHandle,value_to_push,0,10);
+
+	}
+}
+void reveive_message(char * msg_to_reveive, int lenght){
+	if (lenght <= 10) {
+		osMessageQueueget(msgtoreceiveHandle,msg_to_reveive,0,10);
+	}
+
+}
+

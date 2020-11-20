@@ -1,0 +1,803 @@
+/* USER CODE BEGIN Header */
+/**
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "cmsis_os.h"
+#include "stdio.h"
+#include "string.h"
+#include "ctype.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
+#include "thread.h"
+
+#include "game_p4.h"
+#include "leds_control.h"
+
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+ETH_HandleTypeDef heth;
+
+UART_HandleTypeDef huart7;
+UART_HandleTypeDef huart3;
+
+PCD_HandleTypeDef hpcd_USB_OTG_FS;
+
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+		.name = "defaultTask",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 4
+};
+/* Definitions for Task_read */
+osThreadId_t Task_readHandle;
+const osThreadAttr_t Task_read_attributes = {
+		.name = "Task_read",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 4
+};
+/* Definitions for Task_app */
+osThreadId_t Task_appHandle;
+const osThreadAttr_t Task_app_attributes = {
+		.name = "Task_app",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 4
+};
+/* Definitions for Task_display */
+osThreadId_t Task_displayHandle;
+const osThreadAttr_t Task_display_attributes = {
+		.name = "Task_display",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 4
+};
+/* Definitions for Task_timer */
+osThreadId_t Task_timerHandle;
+const osThreadAttr_t Task_timer_attributes = {
+		.name = "Task_timer",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 4
+};
+/* Definitions for Queue_app */
+osMessageQueueId_t Queue_appHandle;
+const osMessageQueueAttr_t Queue_app_attributes = {
+		.name = "Queue_app"
+};
+/* Definitions for Queue_send */
+osMessageQueueId_t Queue_sendHandle;
+const osMessageQueueAttr_t Queue_send_attributes = {
+		.name = "Queue_send"
+};
+/* USER CODE BEGIN PV */
+/* Definitions for Queue_app */
+osMessageQueueId_t Queue_send_HuartHandle;
+const osMessageQueueAttr_t Queue_send_Huart_attributes = {
+		.name = "Queue_send_Huart"
+};
+/* Definitions for Queue_send */
+osMessageQueueId_t Queue_read_HuartHandle;
+const osMessageQueueAttr_t Queue_read_Huart_attributes = {
+		.name = "Queue_read_Huart"
+};
+extern int8_t active_player;
+extern Color actual_display[COL_COUNT][LINE_COUNT + 1 ];
+extern Color matrix_led[COL_COUNT][LINE_COUNT + 1 ];
+extern char recep_tab[5];
+/* USER CODE END PV */
+
+/* Private function prototypes -----------------------------------------------*/
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ETH_Init(void);
+static void MX_USART3_UART_Init(void);
+static void MX_USB_OTG_FS_PCD_Init(void);
+static void MX_UART7_Init(void);
+void StartDefaultTask(void *argument);
+void Task_read_func(void *argument);
+void Task_App_func(void *argument);
+void Task_Display_Func(void *argument);
+void StartTask05(void *argument);
+
+/* USER CODE BEGIN PFP */
+
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/**
+ * @brief  The application entry point.
+ * @retval int
+ */
+int main(void)
+{
+	/* USER CODE BEGIN 1 */
+
+	/* USER CODE END 1 */
+
+	/* MCU Configuration--------------------------------------------------------*/
+
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
+
+	/* USER CODE BEGIN Init */
+
+	/* USER CODE END Init */
+
+	/* Configure the system clock */
+	SystemClock_Config();
+
+	/* USER CODE BEGIN SysInit */
+
+	/* USER CODE END SysInit */
+
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_ETH_Init();
+	MX_USART3_UART_Init();
+	MX_USB_OTG_FS_PCD_Init();
+	MX_UART7_Init();
+	/* USER CODE BEGIN 2 */
+
+	/* USER CODE END 2 */
+
+	/* Init scheduler */
+	osKernelInitialize();
+
+	/* USER CODE BEGIN RTOS_MUTEX */
+	/* add mutexes, ... */
+	/* USER CODE END RTOS_MUTEX */
+
+	/* USER CODE BEGIN RTOS_SEMAPHORES */
+	/* add semaphores, ... */
+	/* USER CODE END RTOS_SEMAPHORES */
+
+	/* USER CODE BEGIN RTOS_TIMERS */
+	/* start timers, add new ones, ... */
+	/* USER CODE END RTOS_TIMERS */
+
+	/* Create the queue(s) */
+	/* creation of Queue_app */
+	Queue_appHandle = osMessageQueueNew (16, sizeof(struct Element), &Queue_app_attributes);
+
+	/* creation of Queue_send */
+	Queue_sendHandle = osMessageQueueNew (16, sizeof(struct Element), &Queue_send_attributes);
+
+	/* USER CODE BEGIN RTOS_QUEUES */
+
+	Queue_send_HuartHandle = osMessageQueueNew (16, 10, &Queue_send_Huart_attributes);
+
+	/* creation of Queue_send */
+	Queue_read_HuartHandle = osMessageQueueNew (16, 5, &Queue_read_Huart_attributes);
+
+	/* add queues, ... */
+	/* USER CODE END RTOS_QUEUES */
+
+	/* Create the thread(s) */
+	/* creation of defaultTask */
+	defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+	/* creation of Task_read */
+	Task_readHandle = osThreadNew(Task_read_func, NULL, &Task_read_attributes);
+
+	/* creation of Task_app */
+	Task_appHandle = osThreadNew(Task_App_func, NULL, &Task_app_attributes);
+
+	/* creation of Task_display */
+	Task_displayHandle = osThreadNew(Task_Display_Func, NULL, &Task_display_attributes);
+
+	/* creation of Task_timer */
+	Task_timerHandle = osThreadNew(StartTask05, NULL, &Task_timer_attributes);
+
+	/* USER CODE BEGIN RTOS_THREADS */
+	/* add threads, ... */
+	/* USER CODE END RTOS_THREADS */
+
+	/* Start scheduler */
+	osKernelStart();
+
+	/* We should never get here as control is now taken by the scheduler */
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	while (1)
+	{
+		/* USER CODE END WHILE */
+
+		/* USER CODE BEGIN 3 */
+	}
+	/* USER CODE END 3 */
+}
+
+/**
+ * @brief System Clock Configuration
+ * @retval None
+ */
+void SystemClock_Config(void)
+{
+	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+	/** Configure the main internal regulator output voltage
+	 */
+	__HAL_RCC_PWR_CLK_ENABLE();
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+	/** Initializes the CPU, AHB and APB busses clocks
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLM = 4;
+	RCC_OscInitStruct.PLL.PLLN = 168;
+	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+	RCC_OscInitStruct.PLL.PLLQ = 7;
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	/** Initializes the CPU, AHB and APB busses clocks
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+			|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
+
+/**
+ * @brief ETH Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_ETH_Init(void)
+{
+
+	/* USER CODE BEGIN ETH_Init 0 */
+
+	/* USER CODE END ETH_Init 0 */
+
+	/* USER CODE BEGIN ETH_Init 1 */
+
+	/* USER CODE END ETH_Init 1 */
+	heth.Instance = ETH;
+	heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
+	heth.Init.PhyAddress = LAN8742A_PHY_ADDRESS;
+	heth.Init.MACAddr[0] =   0x00;
+	heth.Init.MACAddr[1] =   0x80;
+	heth.Init.MACAddr[2] =   0xE1;
+	heth.Init.MACAddr[3] =   0x00;
+	heth.Init.MACAddr[4] =   0x00;
+	heth.Init.MACAddr[5] =   0x00;
+	heth.Init.RxMode = ETH_RXPOLLING_MODE;
+	heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
+	heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
+
+	/* USER CODE BEGIN MACADDRESS */
+
+	/* USER CODE END MACADDRESS */
+
+	if (HAL_ETH_Init(&heth) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	/* USER CODE BEGIN ETH_Init 2 */
+
+	/* USER CODE END ETH_Init 2 */
+
+}
+
+/**
+ * @brief UART7 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_UART7_Init(void)
+{
+
+	/* USER CODE BEGIN UART7_Init 0 */
+
+	/* USER CODE END UART7_Init 0 */
+
+	/* USER CODE BEGIN UART7_Init 1 */
+
+	/* USER CODE END UART7_Init 1 */
+	huart7.Instance = UART7;
+	huart7.Init.BaudRate = 115200;
+	huart7.Init.WordLength = UART_WORDLENGTH_8B;
+	huart7.Init.StopBits = UART_STOPBITS_1;
+	huart7.Init.Parity = UART_PARITY_NONE;
+	huart7.Init.Mode = UART_MODE_TX_RX;
+	huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart7.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_UART_Init(&huart7) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	/* USER CODE BEGIN UART7_Init 2 */
+
+	/* USER CODE END UART7_Init 2 */
+
+}
+
+/**
+ * @brief USART3 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USART3_UART_Init(void)
+{
+
+	/* USER CODE BEGIN USART3_Init 0 */
+
+	/* USER CODE END USART3_Init 0 */
+
+	/* USER CODE BEGIN USART3_Init 1 */
+
+	/* USER CODE END USART3_Init 1 */
+	huart3.Instance = USART3;
+	huart3.Init.BaudRate = 115200;
+	huart3.Init.WordLength = UART_WORDLENGTH_8B;
+	huart3.Init.StopBits = UART_STOPBITS_1;
+	huart3.Init.Parity = UART_PARITY_NONE;
+	huart3.Init.Mode = UART_MODE_TX_RX;
+	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_UART_Init(&huart3) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	/* USER CODE BEGIN USART3_Init 2 */
+
+	/* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+ * @brief USB_OTG_FS Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_USB_OTG_FS_PCD_Init(void)
+{
+
+	/* USER CODE BEGIN USB_OTG_FS_Init 0 */
+
+	/* USER CODE END USB_OTG_FS_Init 0 */
+
+	/* USER CODE BEGIN USB_OTG_FS_Init 1 */
+
+	/* USER CODE END USB_OTG_FS_Init 1 */
+	hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
+	hpcd_USB_OTG_FS.Init.dev_endpoints = 4;
+	hpcd_USB_OTG_FS.Init.speed = PCD_SPEED_FULL;
+	hpcd_USB_OTG_FS.Init.dma_enable = DISABLE;
+	hpcd_USB_OTG_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
+	hpcd_USB_OTG_FS.Init.Sof_enable = ENABLE;
+	hpcd_USB_OTG_FS.Init.low_power_enable = DISABLE;
+	hpcd_USB_OTG_FS.Init.lpm_enable = DISABLE;
+	hpcd_USB_OTG_FS.Init.vbus_sensing_enable = ENABLE;
+	hpcd_USB_OTG_FS.Init.use_dedicated_ep1 = DISABLE;
+	if (HAL_PCD_Init(&hpcd_USB_OTG_FS) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	/* USER CODE BEGIN USB_OTG_FS_Init 2 */
+
+	/* USER CODE END USB_OTG_FS_Init 2 */
+
+}
+
+/**
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_GPIO_Init(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOH_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOG_CLK_ENABLE();
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin : USER_Btn_Pin */
+	GPIO_InitStruct.Pin = USER_Btn_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
+	GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : USB_PowerSwitchOn_Pin */
+	GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(USB_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : USB_OverCurrent_Pin */
+	GPIO_InitStruct.Pin = USB_OverCurrent_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+
+}
+
+/* USER CODE BEGIN 4 */
+
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+ * @brief  Function implementing the defaultTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+	/* USER CODE BEGIN 5 */
+	unsigned char text[9]="dbonjour\n";
+
+	bool lower = true;
+	bool upper = false;
+	unsigned char temp [9];
+	/* Infinite loop */
+	for(;;)
+	{
+
+		if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port,USER_Btn_Pin)){
+			if(lower == true && upper == false){
+				temp[0]='d';
+				for(int i = 1; text[i] !='\n';i++){
+					temp[i]=toupper(text[i]);
+				}
+				temp[8]='\n';
+				upper=true;
+				lower = false;
+			}
+			else if(upper==true && lower == false){
+				temp[0]='d';
+				for(int i = 1; text[i] !='\n';i++){
+					temp[i]=tolower(text[i]);
+				}
+				temp[8]='\n';
+				lower=true;
+				upper = false;
+			}
+			HAL_UART_Transmit(&huart7,temp, 9, 10);
+
+		}
+		//		if (readbutton(recep_tab, 5) == LCRC_OK) {
+		//			osDelay(1000);
+		//			setLedColor(2,2,255,0,0);
+
+		osDelay(1);
+		//			setLedColor(2,2,0,0,0);
+
+	}
+	/* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_Task_read_func */
+/**
+ * @brief Function implementing the Task_read thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Task_read_func */
+void Task_read_func(void *argument)
+{
+	/* USER CODE BEGIN Task_read_func */
+	/* Infinite loop */
+	for(;;)
+	{
+		struct Element command;
+		if (readbutton(recep_tab, 5) == LCRC_OK) {
+			//			printf("%d %d %d %d \n", recep_tab[0], recep_tab[1], recep_tab[2],
+			//					recep_tab[3]);
+			command.msg=msg_player;
+			if (recep_tab[0] == 'p') {
+				if (recep_tab[1] == '1') {
+					command.data.player.player = PLAYER_1;
+				} else if (recep_tab[1] == '2') {
+					command.data.player.player  = PLAYER_2;
+				}
+				if (recep_tab[3] == 100) {
+
+					if (recep_tab[2] == 'd') {
+						command.data.player.direction  = DOWN;
+					}
+					if (recep_tab[2] == 'u') {
+						command.data.player.direction = UP;
+					}
+					if (recep_tab[2] == 'r') {
+						command.data.player.direction = RIGHT;
+					}
+					if (recep_tab[2] == 'l') {
+						command.data.player.direction = LEFT;
+					}
+					send_message(QUEUE_READ, &command, SIZEOFMESSAGE);
+
+				}
+
+
+			}
+		}
+	}
+	osDelay(1);
+	//	}
+	/* USER CODE END Task_read_func */
+}
+
+/* USER CODE BEGIN Header_Task_App_func */
+/**
+ * @brief Function implementing the Task_app thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Task_App_func */
+void Task_App_func(void *argument)
+{
+	/* USER CODE BEGIN Task_App_func */
+	active_player = 0;
+	winner_t winner_status;
+	struct Element receive_value;
+	struct Element send_value;
+	pos_token_played_t played_token;
+	//	/* Infinite loop */
+	for(;;)
+	{
+		//			iddle 5
+		//			round 15
+		if (receive_message(QUEUE_READ, &receive_value, SIZEOFMESSAGE)) {
+			//			printf("app %d %d \n", receive_value.data.value[0],
+			//					receive_value.data.value[1]);
+			if (receive_value.msg==msg_timer){
+				if (receive_value.data.timer_id == ROUND_TIMER || receive_value.data.timer_id == IDLE_TIMER) {
+					played_token = gp4_play_token();
+					compute_message(&send_value, &played_token);
+					send_message(QUEUE_SEND, &send_value, SIZEOFMESSAGE);
+					played_token = gp4_next_player();
+					winner_status=gp4_check_winner();
+					check_win(&winner_status, &send_value);
+					//decompte(&receive_value, &nb_value);
+				}
+
+			}
+			else if(receive_value.msg==msg_player){
+				//			stop_timer(IDLE_TIMER);
+				if (receive_value.data.player.player == active_player) {
+					if (receive_value.data.player.direction == DOWN) {
+						played_token = gp4_play_token();
+						compute_message(&send_value, &played_token);
+						send_message(QUEUE_SEND, &send_value, SIZEOFMESSAGE);
+						played_token=gp4_next_player();
+						winner_status=gp4_check_winner();
+						check_win(&winner_status, &send_value);
+					}
+					if (receive_value.data.player.direction == RIGHT) {
+
+						played_token = gp4_move_right();
+
+					}
+					if (receive_value.data.player.direction == LEFT) {
+
+						played_token = gp4_move_left();
+
+					}
+					//				start_timer(IDLE_TIMER,5,thd_app);
+				}
+				if (active_player == NO_PLAYER ){
+					set_all_black();
+					init_matrix();
+					gp4_init();
+
+					active_player = PLAYER_1;
+					played_token.beg_position.c = 0;
+					played_token.beg_position.l = 0;
+					played_token.end_position.l = 0;
+					played_token.end_position.c = 3;
+					send_value.msg = msg_move_token;
+					send_value.data.token.color = PLAYER_COLOR_1;
+					//				start_timer(ROUND_TIMER,15,thd_app);
+					//				start_timer(IDLE_TIMER,5,thd_app);
+
+				}
+
+
+			}
+
+
+			compute_message(&send_value, &played_token);
+			send_message(QUEUE_SEND, &send_value, SIZEOFMESSAGE);
+		}
+
+		osDelay(1);
+	}
+	/* USER CODE END Task_App_func */
+}
+
+/* USER CODE BEGIN Header_Task_Display_Func */
+/**
+ * @brief Function implementing the Task_display thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Task_Display_Func */
+void Task_Display_Func(void *argument)
+{
+	/* USER CODE BEGIN Task_Display_Func */
+	/* Infinite loop */
+	struct Element value_compt;
+	for(;;)
+	{
+
+
+		if (receive_message(QUEUE_SEND, &value_compt, SIZEOFMESSAGE)) {
+			//			printf(" display b %d%d  e %d%d \n",
+			//					value_compt.data.token.position.beg_position.c,
+			//					value_compt.data.token.position.beg_position.l,
+			//					value_compt.data.token.position.end_position.c,
+			//					value_compt.data.token.position.end_position.l);
+			//			set_number(value_compt.data.value[1]);
+			setledmatrix(&value_compt);
+
+
+			for (int row = 0; row < 7; row++){
+				for (int col = 0; col < 7; col++){
+					if ((matrix_led[row][col].RValue == actual_display[row][col].RValue)
+							&& (matrix_led[row][col].GValue == actual_display[row][col].GValue)
+							&& (matrix_led[row][col].BValue == actual_display[row][col].BValue)) {
+					} else {
+						setLedColor((row + 1 ), (col + 1 ),
+								matrix_led[row][col].RValue,
+								matrix_led[row][col].GValue,
+								matrix_led[row][col].BValue);
+						actual_display[row ][col] = matrix_led[row ][col];
+					}
+				}
+			}
+
+		}
+
+		osDelay(1);
+	}
+	/* USER CODE END Task_Display_Func */
+}
+
+/* USER CODE BEGIN Header_StartTask05 */
+/**
+ * @brief Function implementing the Task_timer thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartTask05 */
+void StartTask05(void *argument)
+{
+	/* USER CODE BEGIN StartTask05 */
+	/* Infinite loop */
+	for(;;)
+	{
+		unsigned char message[SIZEOFMESSAGE] = { 0 };
+		if(osMessageQueueGetCount (Queue_send_HuartHandle) != 0){
+			osMessageQueueGet(Queue_send_HuartHandle,message,0,10);
+			HAL_UART_Transmit(&huart7,message, SIZEOFMESSAGE, 10);
+
+		}
+		if(HAL_UART_Receive(&huart7,message,5,20)== HAL_OK ){
+			osMessageQueuePut(Queue_read_HuartHandle,message,0,osWaitForever);
+		}
+	}
+	/* USER CODE END StartTask05 */
+}
+
+/**
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM1 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	/* USER CODE BEGIN Callback 0 */
+
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM1) {
+		HAL_IncTick();
+	}
+	/* USER CODE BEGIN Callback 1 */
+
+	/* USER CODE END Callback 1 */
+}
+
+/**
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void)
+{
+	/* USER CODE BEGIN Error_Handler_Debug */
+	/* User can add his own implementation to report the HAL error return state */
+
+	/* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
+void assert_failed(uint8_t *file, uint32_t line)
+{ 
+	/* USER CODE BEGIN 6 */
+	/* User can add his own implementation to report the file name and line number,
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	/* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+		<item value="/home/mickaell/Atollic/cours_C/RTC_project"/>
+		<item value="/home/mickaell/Atollic/cours_C/FamineThread"/>
 		<item value="/home/mickaell/Atollic/cours_C/Puissance_4_Stm32"/>
 		<item value="/home/mickaell/carte_test/Leds_Decomptes"/>
 		<item value="/home/mickaell/carte_test/led_blink"/>

@@ -1,6 +1,0 @@
-
-#ifndef SERVER_H_
-
-connect_server(void);
-
-#endif

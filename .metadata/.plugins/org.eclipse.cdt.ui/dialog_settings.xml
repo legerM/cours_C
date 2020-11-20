@@ -15,8 +15,8 @@
 		<item value="400" key="height"/>
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
-		<item value="150" key="size.height"/>
-		<item value="794" key="size.width"/>
+		<item value="132" key="size.height"/>
+		<item value="776" key="size.width"/>
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">
 	</section>
@@ -24,6 +24,7 @@
 		<item value="false" key="caseSensitive"/>
 		<item value="227191" key="searchFlags"/>
 		<list key="previousPatterns">
+			<item value="Queue_send_HuartHandle"/>
 			<item value="LINE_COUNT"/>
 			<item value="g_token_top_selector"/>
 			<item value="tab_size"/>

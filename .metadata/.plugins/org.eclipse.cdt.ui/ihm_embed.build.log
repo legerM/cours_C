@@ -1,0 +1,7 @@
+16:13:22 **** Incremental Build of configuration Debug for project ihm_embed ****
+Info: Internal Builder is used for build
+arm-atollic-eabi-objcopy -O ihex ihm_embed.elf ihm_embed.hex 
+Info: Parallel threads used: 0
+
+16:13:23 Build Finished (took 768ms)
+
